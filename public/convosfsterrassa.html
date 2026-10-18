@@ -1,0 +1,984 @@
+<!doctype html>
+<html lang="ca">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#c82036">
+  <title>Convocatòries | Fundació Terrassa FC 1906</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { color-scheme: light; --paper:#f4f2ef; --surface:#fff; --ink:#191615; --muted:#706865; --line:#ded8d4; --field:#faf8f6; --red:#c82036; --red-dark:#a8162b; --green:#246b49; --display:"Barlow Condensed","Arial Narrow",sans-serif; --body:"Barlow","Segoe UI",sans-serif; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:400 15px/1.45 var(--body); }
+    button,input,textarea { font:inherit; }
+    .shell { width:min(1120px,100% - 36px); margin:0 auto; padding:24px 0 48px; }
+    .masthead { display:flex; align-items:center; gap:14px; padding-bottom:21px; border-bottom:2px solid var(--ink); }
+    .club-logo { display:block; flex:0 0 58px; width:58px; height:58px; object-fit:contain; }
+    .brand h1 { margin:0; font:800 30px/.95 var(--display); text-transform:uppercase; }
+    .brand p { margin:5px 0 0; color:var(--muted); font-size:13px; }
+    .season { margin-left:auto; text-align:right; color:var(--muted); font-size:12px; text-transform:uppercase; }
+    .season strong { display:block; color:var(--ink); font:700 16px/1 var(--display); }
+    .logout-button { flex:none; padding:8px 10px; color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:4px; font-size:12px; font-weight:700; text-decoration:none; }
+    .logout-button:hover { border-color:var(--red); color:var(--red); }
+    .intro { padding:24px 0 19px; }
+    .intro h2 { margin:0; font:700 25px/1 var(--display); text-transform:uppercase; }
+    .intro p { max-width:600px; margin:7px 0 0; color:var(--muted); }
+    .layout { display:grid; grid-template-columns:minmax(0,1.12fr) minmax(330px,.88fr); gap:32px; align-items:start; }
+    .form-column { min-width:0; }
+    .section { padding:20px 0; border-top:1px solid var(--line); }
+    .section:first-child { border-top:2px solid var(--ink); }
+    .section-head { display:flex; align-items:baseline; gap:10px; margin-bottom:16px; }
+    .step { color:var(--red); font:800 15px/1 var(--display); }
+    .section h3,.preview h3 { margin:0; font:700 20px/1 var(--display); text-transform:uppercase; }
+    .grid { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:13px 12px; }
+    .match-schedule { grid-template-columns:repeat(4,minmax(0,1fr)); }
+    .field { display:grid; gap:6px; min-width:0; }
+    .span-6 { grid-column:span 6; } .span-3 { grid-column:span 3; } .span-2 { grid-column:span 2; }
+    label { color:var(--muted); font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; }
+    input,textarea { width:100%; min-width:0; padding:10px 11px; color:var(--ink); background:var(--field); border:1px solid var(--line); border-radius:4px; }
+    input:focus,textarea:focus { outline:2px solid var(--red); outline-offset:1px; border-color:transparent; }
+    input[type=date],input[type=time] { font-variant-numeric:tabular-nums; }
+    textarea { min-height:82px; resize:vertical; }
+    .match { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); gap:10px; align-items:end; }
+    .team-input { display:flex; align-items:center; gap:8px; min-width:0; }
+    .team-crest { flex:0 0 42px; width:42px; height:42px; object-fit:contain; padding:3px; background:var(--surface); border:1px solid var(--line); border-radius:4px; }
+    .team-input input { min-width:0; }
+    .kits { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0; margin-top:10px; border:1px solid var(--line); border-radius:4px; overflow:hidden; }
+    .kit-column { display:grid; align-content:start; gap:5px; min-width:0; padding:10px; }
+    .kit-column + .kit-column { border-left:1px solid var(--line); }
+    .kit-heading { margin:0; font:700 14px/1.2 var(--display); text-transform:uppercase; }
+    .kit-team-name { margin:0; color:var(--muted); font-size:12px; overflow-wrap:anywhere; }
+    .kit-list { display:grid; gap:0; margin-top:3px; }
+    .kit { display:inline-flex; align-items:center; gap:7px; padding:7px 0; color:var(--muted); font-size:12px; }
+    .kit + .kit { border-top:1px solid var(--line); }
+    .kit-swatch { flex:none; width:25px; height:25px; background:var(--line); clip-path:polygon(38% 4%, 25% 14%, 5% 24%, 17% 48%, 29% 43%, 29% 96%, 71% 96%, 71% 43%, 83% 48%, 95% 24%, 75% 14%, 62% 4%, 56% 11%, 44% 11%); filter:drop-shadow(0 0 1.5px #000) drop-shadow(1px 0 0 #000) drop-shadow(-1px 0 0 #000) drop-shadow(0 1px 0 #000) drop-shadow(0 -1px 0 #000); }
+    .kit-choice { grid-column:span 6; min-width:0; margin:4px 0 0; padding:0; border:0; }
+    .kit-choice legend { margin-bottom:8px; color:var(--muted); font:600 12px/1 var(--body); text-transform:uppercase; }
+    .kit-choice-options { display:flex; flex-wrap:nowrap; align-items:center; justify-content:space-between; gap:8px; }
+    .kit-choice label { display:inline-flex; flex:none; align-items:center; gap:5px; color:var(--ink); font:500 13px/1.3 var(--body); text-transform:none; letter-spacing:0; white-space:nowrap; cursor:pointer; }
+    .kit-choice input { width:auto; margin:0; accent-color:var(--red); }
+    @media(max-width:520px) { .kits { grid-template-columns:1fr; } .kit-column + .kit-column { border-top:1px solid var(--line); border-left:0; } }
+    @media(max-width:360px) { .kit-choice-options { gap:4px; } .kit-choice label { gap:3px; font-size:12px; } }
+    .vs { padding:0 0 10px; color:var(--red); font:800 17px/1 var(--display); }
+    .arrival { display:flex; gap:7px; }
+    .arrival input { flex:1; }
+    .arrival select { width:94px; padding-inline:7px; }
+    .match-date-control input,.match-time-control input { max-width:150px; }
+    .match-arrival-control .arrival { max-width:190px; }
+    .match-arrival-control .arrival select { width:72px; }
+    select { width:100%; min-width:0; padding:10px 32px 10px 11px; color:var(--ink); background:var(--field); border:1px solid var(--line); border-radius:4px; font:inherit; }
+    select:disabled { opacity:.65; }
+    .seg { display:inline-grid; grid-template-columns:1fr 1fr; gap:3px; padding:3px; background:var(--field); border:1px solid var(--line); border-radius:4px; }
+    .seg button { min-width:112px; padding:8px 12px; color:var(--muted); background:transparent; border:0; border-radius:3px; font:700 15px/1 var(--display); text-transform:uppercase; cursor:pointer; }
+    .seg button[aria-pressed="true"] { color:#fff; background:var(--ink); }
+    [hidden] { display:none !important; }
+    .icon-button { width:42px; padding:0; display:inline-grid; place-items:center; color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:4px; cursor:pointer; }
+    .icon-button:hover { border-color:var(--red); color:var(--red); }
+    .hint { margin:4px 0 0; color:var(--muted); font-size:12px; }
+    .button { min-height:40px; display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:9px 13px; border:1px solid var(--line); border-radius:4px; background:var(--surface); color:var(--ink); text-decoration:none; font-weight:700; cursor:pointer; }
+    .button:hover { border-color:var(--ink); }
+    .button.primary { color:#fff; background:var(--red); border-color:var(--red); }
+    .button.primary:hover { background:var(--red-dark); }
+    .button:disabled { opacity:.48; cursor:not-allowed; }
+    .status { min-height:18px; margin:8px 0 0; color:var(--muted); font-size:12px; }
+    .status.error { color:var(--red-dark); } .status.success { color:var(--green); }
+    .roster-tools { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 14px; margin-bottom:8px; }
+    .roster-tools .status { margin:0; }
+    .roster-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 20px; margin:0 0 14px; padding:12px 12px 12px 32px; background:var(--field); border:1px solid var(--line); border-radius:4px; font-size:13px; }
+    .roster-list li { padding:2px 0; overflow-wrap:anywhere; }
+    .preview { position:sticky; top:18px; min-width:0; padding-top:20px; border-top:2px solid var(--ink); }
+    .preview-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+    .live { display:inline-flex; align-items:center; gap:6px; color:var(--green); font-size:11px; font-weight:700; text-transform:uppercase; }
+    .live:before { content:""; width:7px; height:7px; border-radius:50%; background:var(--green); }
+    .message { min-height:330px; padding:16px; background:#e8e1d9; border-radius:5px; }
+    .message-text { min-height:290px; padding:14px; white-space:pre-wrap; overflow-wrap:anywhere; color:#171717; background:#d8f3d0; border-radius:5px 0 5px 5px; box-shadow:0 1px 2px #0002; font:400 14px/1.45 "Segoe UI",sans-serif; }
+    .message-text .missing { color:#a8162b; font-weight:700; }
+    .actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+    .actions .button:first-child { grid-column:span 2; }
+    .preview > .message { min-height:0; padding-bottom:0; }
+    .preview > .message .message-text { min-height:0; }
+    .calendar { margin-top:22px; padding-top:17px; border-top:1px solid var(--line); }
+    .calendar h4 { margin:0 0 10px; font:700 17px/1 var(--display); text-transform:uppercase; }
+    .calendar-meta { display:grid; grid-template-columns:58px 1fr; gap:12px; align-items:start; }
+    .date-badge { display:grid; text-align:center; border:1px solid var(--line); border-radius:4px; overflow:hidden; background:var(--surface); }
+    .date-badge span { padding:4px; color:#fff; background:var(--red); font:700 11px/1 var(--display); text-transform:uppercase; }
+    .date-badge strong { padding:5px 0; font:700 26px/1 var(--display); }
+    .calendar-title { margin:1px 0 3px; font-weight:700; }
+    .calendar-subtitle { margin:0; color:var(--muted); font-size:13px; overflow-wrap:anywhere; }
+    .calendar .button { width:100%; margin-top:12px; }
+    .footer { margin-top:34px; padding-top:12px; border-top:1px solid var(--line); color:var(--muted); font-size:11px; }
+    @media(max-width:780px) { .shell { width:min(100% - 28px,620px); padding-top:16px; } .layout { grid-template-columns:1fr; gap:12px; } .preview { position:static; } }
+    @media(max-width:500px) { .season { display:none; } .logout-button { padding:7px 8px; font-size:11px; } .brand h1 { font-size:27px; } .grid { gap:11px 8px; } .span-3,.span-2 { grid-column:span 6; } .match-schedule { grid-template-columns:repeat(2,minmax(0,1fr)); } .match-schedule #jornada-field,.match-schedule .match-arrival-control { grid-column:span 2; } .match { grid-template-columns:1fr; gap:6px; } .vs { justify-self:center; padding:0; } .match-date-control input,.match-time-control input { max-width:none; } .match-arrival-control .arrival { max-width:none; } .match-arrival-control .arrival select { width:94px; } .actions { grid-template-columns:1fr; } .actions .button:first-child { grid-column:auto; } }
+    @media(prefers-reduced-motion:reduce) { *,*:before,*:after { scroll-behavior:auto!important; transition:none!important; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <img class="club-logo" src="https://files.fcf.cat/escudos/clubes/escudos/00100_0000988633_TERRASSAFCnou.png" alt="Escut oficial de la Fundació Terrassa FC 1906">
+      <div class="brand"><h1>Fundació Terrassa FC 1906</h1><p>Futbol sala · Convocatòries de partit</p></div>
+      <div class="season"><strong>Temporada</strong>2026 / 2027</div>
+      <a class="logout-button" href="/api/auth/logout">Tancar sessió</a>
+    </header>
+    <div class="intro"><h2>Preparar convocatòria</h2><p>Introdueix les dades del partit i prepara l’avís per compartir amb l’equip.</p></div>
+    <div class="layout">
+      <div class="form-column">
+        <section class="section" aria-labelledby="language-heading">
+          <div class="section-head"><h3 id="language-heading">Idioma</h3></div>
+          <div class="seg" role="group" aria-labelledby="language-heading">
+            <button id="language-ca" type="button" aria-pressed="true" title="Català">CA</button>
+            <button id="language-es" type="button" aria-pressed="false" title="Español">ES</button>
+          </div>
+        </section>
+        <section class="section" aria-labelledby="source-heading">
+          <div class="section-head"><h3 id="source-heading">Tipo de partido</h3></div>
+          <div class="seg" role="group" aria-labelledby="source-heading">
+            <button id="mode-league" type="button" aria-pressed="true">Competición</button>
+            <button id="mode-pre" type="button" aria-pressed="false">Amistoso</button>
+          </div>
+          <div class="grid" id="club-team-field" hidden>
+            <div class="field span-6"><label for="club-team">Equip de futbol sala FCF</label><select id="club-team" disabled><option value="">Carregant equips de Terrassa…</option></select></div>
+          </div>
+          <p class="status" id="club-team-status" role="status" aria-live="polite"></p>
+          <div class="grid" id="club-match-field" hidden>
+            <div class="field span-6"><label for="club-match">Propers partits</label><select id="club-match" disabled><option value="">Primer tria l’equip</option></select></div>
+          </div>
+          <p class="status" id="club-match-status" role="status" aria-live="polite"></p>
+          <p class="hint" id="source-hint">Per als partits amistosos.</p>
+        </section>
+        <section class="section" aria-labelledby="match-heading">
+          <div class="section-head"><span class="step">01</span><h3 id="match-heading">El partit</h3></div>
+          <div class="grid">
+            <div class="field span-3"><label for="team">Equip / categoria</label><input id="team" autocomplete="organization-title" placeholder="Ex.: Sènior A"></div>
+            <div class="field span-3" id="competition-field"><label for="competition">Competició</label><input id="competition" placeholder="Ex.: Divisió d’Honor"></div>
+            <div class="grid span-6 match-schedule">
+              <div class="field" id="jornada-field" hidden><label for="jornada">Jornada</label><input id="jornada" type="number" min="1" max="40" inputmode="numeric" placeholder="1"></div>
+              <div class="field match-date-control"><label for="date">Data</label><input id="date" type="date"></div>
+              <div class="field match-time-control"><label for="time">Hora del partit</label><input id="time" type="time"></div>
+              <div class="field match-arrival-control"><label for="arrival">Hora de convocatòria</label><div class="arrival"><input id="arrival" type="time"><select id="arrival-offset" aria-label="Marge abans del partit"><option value="15">−15 m</option><option value="30">−30 m</option><option value="45" selected>−45 m</option><option value="60">−1 h</option></select></div></div>
+            </div>
+            <div class="field span-6 match">
+              <div class="field"><label for="home">Equip local</label><div class="team-input"><img class="team-crest" id="home-crest" alt="" hidden><input id="home" autocomplete="off" placeholder="Futbol Sala Terrassa"></div></div><span class="vs" aria-hidden="true">VS</span>
+              <div class="field"><label for="away">Equip visitant</label><div class="team-input"><img class="team-crest" id="away-crest" alt="" hidden><input id="away" autocomplete="off" placeholder="Equip rival"></div></div>
+            </div>
+          </div>
+          <p class="hint">Tria un marge de 15, 30, 45 o 60 minuts abans del partit.</p>
+        </section>
+        <section class="section" aria-labelledby="place-heading">
+          <div class="section-head"><span class="step">02</span><h3 id="place-heading">Lloc i equipació</h3></div>
+          <div class="grid">
+            <div class="field span-6"><label for="venue">Pavelló / lloc</label><input id="venue" autocomplete="street-address" placeholder="Nom del pavelló i adreça"></div>
+            <div class="field span-6"><label for="map-url">Enllaç de Google Maps (opcional)</label><input id="map-url" type="url" inputmode="url" placeholder="https://maps.google.com/"></div>
+            <div class="kits span-6" id="team-kits" aria-label="Camisetes dels equips" hidden>
+              <div class="kit-column">
+                <h4 class="kit-heading">Local</h4>
+                <p class="kit-team-name" id="kit-home-name"></p>
+                <div class="kit-list">
+                  <span class="kit" id="kit-home-first" hidden><span class="kit-swatch" id="kit-home-first-swatch" aria-hidden="true"></span><span id="kit-home-first-label"></span></span>
+                  <span class="kit" id="kit-home-second" hidden><span class="kit-swatch" id="kit-home-second-swatch" aria-hidden="true"></span><span id="kit-home-second-label"></span></span>
+                </div>
+              </div>
+              <div class="kit-column">
+                <h4 class="kit-heading">Visitante</h4>
+                <p class="kit-team-name" id="kit-away-name"></p>
+                <div class="kit-list">
+                  <span class="kit" id="kit-away-first" hidden><span class="kit-swatch" id="kit-away-first-swatch" aria-hidden="true"></span><span id="kit-away-first-label"></span></span>
+                  <span class="kit" id="kit-away-second" hidden><span class="kit-swatch" id="kit-away-second-swatch" aria-hidden="true"></span><span id="kit-away-second-label"></span></span>
+                </div>
+              </div>
+            </div>
+            <fieldset class="kit-choice" aria-required="true" aria-describedby="kit-choice-hint">
+              <legend>Quines equipacions cal portar?</legend>
+              <div class="kit-choice-options">
+                <label><input id="kit-choice-first" type="checkbox" checked> 1a equipació</label>
+                <label><input id="kit-choice-second" type="checkbox" checked> 2a equipació</label>
+                <label><input id="kit-choice-both" type="checkbox" checked> Ambdues</label>
+              </div>
+              <p class="hint" id="kit-choice-hint">Cal seleccionar almenys una equipació.</p>
+            </fieldset>
+            <div class="field span-6"><label for="notes">Indicacions per a l’equip</label><textarea id="notes">Venir amb la roba del club.</textarea></div>
+          </div>
+        </section>
+        <section class="section" aria-labelledby="players-heading">
+          <div class="section-head"><span class="step">03</span><h3 id="players-heading">Jugadors disponibles</h3></div>
+          <div class="roster-tools" id="fcf-roster" hidden>
+            <p class="status" id="fcf-roster-status" role="status" aria-live="polite"></p>
+            <button class="button" id="use-fcf-roster" type="button" disabled>Afegir plantilla a la llista</button>
+          </div>
+          <ol class="roster-list" id="fcf-roster-list" hidden></ol>
+          <div class="field"><label for="players">Llista per confirmar assistència</label><textarea id="players" placeholder="Un jugador per línia"></textarea></div>
+          <p class="hint">Es numerarà automàticament al missatge. Deixa-ho buit si encara no tens la llista.</p>
+        </section>
+      </div>
+      <aside class="preview" aria-labelledby="preview-heading">
+        <div class="preview-head"><h3 id="preview-heading">Avís per al grup</h3></div>
+        <div class="message"><div class="message-text" id="message" aria-live="polite"></div></div>
+        <p class="status" id="copy-status" role="status" aria-live="polite"></p>
+        <div class="actions">
+          <button class="button primary" id="copy" type="button">Copiar convocatòria</button>
+          <a class="button" id="whatsapp" href="https://wa.me/" target="_blank" rel="noopener">Obrir WhatsApp</a>
+          <button class="button" id="download" type="button">Descarregar calendari .ics</button>
+        </div>
+        <div class="calendar" aria-labelledby="calendar-heading">
+          <h4 id="calendar-heading">Cita de calendari</h4>
+          <div class="calendar-meta"><div class="date-badge"><span id="month"></span><strong id="day"></strong></div><div><p class="calendar-title" id="event-title">Partit de futbol sala</p><p class="calendar-subtitle" id="event-time">Completa la data i l’hora del partit.</p><p class="calendar-subtitle" id="event-place"></p></div></div>
+          <button class="button" id="calendar-download" type="button">Descarregar cita .ics</button>
+        </div>
+        <p class="footer">Les dades del formulari es processen en aquest dispositiu; no es desen en un servidor.</p>
+      </aside>
+    </div>
+  </main>
+  <script>
+    (() => {
+      const byId = (id) => document.getElementById(id);
+      const TEXT_PAIRS = [
+        ["Futbol sala · Convocatòries de partit", "Fútbol sala · Convocatorias de partido"],
+        ["Tancar sessió", "Cerrar sesión"],
+        ["Preparar convocatòria", "Preparar convocatoria"],
+        ["Introdueix les dades del partit i prepara l’avís per compartir amb l’equip.", "Introduce los datos del partido y prepara el aviso para compartir con el equipo."],
+        ["Enganxa el text del correu o de la notificació", "Pega el texto del correo o de la notificación"],
+        ["Enganxa aquí el text de l’avís de partit", "Pega aquí el texto del aviso del partido"],
+        ["Llegir text", "Leer texto"], ["Afegir captura", "Añadir captura"], ["Llegir imatge", "Leer imagen"],
+        ["Tipo de partido", "Tipo de partido"], ["Tipus de partit", "Tipo de partido"],
+        ["Competición", "Competición"], ["Competició", "Competición"], ["Amistós", "Amistoso"],
+        ["Per als partits amistosos.", "Para los partidos amistosos."],
+        ["Equip de futbol sala FCF", "Equipo de fútbol sala FCF"],
+        ["Carregant equips de Terrassa…", "Cargando equipos de Terrassa…"],
+        ["Propers partits", "Próximos partidos"], ["Primer tria l’equip", "Primero elige un equipo"],
+        ["Carregant partits…", "Cargando partidos…"], ["Carregant els propers partits…", "Cargando los próximos partidos…"],
+        ["El partit", "El partido"], ["Equip / categoria", "Equipo / categoría"], ["Ex.: Sènior A", "Ej.: Sénior A"],
+        ["Ex.: Divisió d’Honor", "Ej.: División de Honor"], ["Jornada", "Jornada"],
+        ["Equip local", "Equipo local"], ["Equip visitant", "Equipo visitante"], ["Equip rival", "Equipo rival"],
+        ["Data", "Fecha"], ["Hora del partit", "Hora del partido"], ["Hora de convocatòria", "Hora de convocatoria"],
+        ["Marge abans del partit", "Margen antes del partido"],
+        ["Tria un marge de 15, 30, 45 o 60 minuts abans del partit.", "Elige un margen de 15, 30, 45 o 60 minutos antes del partido."],
+        ["Lloc i equipació", "Lugar y equipación"], ["Pavelló / lloc", "Pabellón / lugar"],
+        ["Nom del pavelló i adreça", "Nombre del pabellón y dirección"],
+        ["Enllaç de Google Maps (opcional)", "Enlace de Google Maps (opcional)"],
+        ["Quines equipacions cal portar?", "¿Qué equipaciones hay que llevar?"],
+        ["Cal seleccionar almenys una equipació.", "Hay que seleccionar al menos una equipación."],
+        ["1a equipació", "1a equipación"], ["2a equipació", "2a equipación"], ["Ambdues", "Ambas"],
+        ["Indicacions per a l’equip", "Indicaciones para el equipo"],
+        ["Venir amb la roba del club.", "Venir con la ropa del club."],
+        ["Jugadors disponibles", "Jugadores disponibles"], ["Llista per confirmar assistència", "Lista para confirmar asistencia"],
+        ["Un jugador per línia", "Un jugador por línea"],
+        ["Afegir plantilla a la llista", "Añadir plantilla a la lista"],
+        ["Es numerarà automàticament al missatge. Deixa-ho buit si encara no tens la llista.", "Se numerará automáticamente en el mensaje. Déjalo vacío si aún no tienes la lista."],
+        ["Avís per al grup", "Aviso para el grupo"],
+        ["Copiar convocatòria", "Copiar convocatoria"], ["Copiar missatge complet", "Copiar mensaje completo"], ["Copiar ambdós missatges", "Copiar ambos mensajes"], ["Obrir WhatsApp", "Abrir WhatsApp"],
+        ["Confirmació d’assistència", "Confirmación de asistencia"],
+        ["Descarregar calendari .ics", "Descargar calendario .ics"], ["Descarregar cita .ics", "Descargar cita .ics"], ["Cita de calendari", "Cita del calendario"],
+        ["Partit de futbol sala", "Partido de fútbol sala"],
+        ["Completa la data i l’hora del partit.", "Completa la fecha y la hora del partido."],
+        ["Les dades del formulari es processen en aquest dispositiu; no es desen en un servidor.", "Los datos del formulario se procesan en este dispositivo; no se guardan en un servidor."],
+        ["Local", "Local"], ["Visitant", "Visitante"],
+        ["No he reconegut cap dada. Completa els camps manualment.", "No se reconocieron datos. Completa los campos manualmente."],
+        ["No s’ha carregat l’OCR. Enganxa el text de l’avís o introdueix les dades manualment.", "No se cargó el OCR. Pega el texto del aviso o introduce los datos manualmente."],
+        ["Llegint la captura…", "Leyendo la imagen…"],
+        ["No he trobat les dades. Revisa el text i completa els camps manualment.", "No se encontraron los datos. Revisa el texto y completa los campos manualmente."],
+        ["No s’ha pogut llegir la imatge. Prova d’enganxar el text de l’avís.", "No se pudo leer la imagen. Prueba a pegar el texto del aviso."],
+        ["Tria un equip i una competició per carregar-ne els propers partits.", "Elige un equipo y una competición para cargar sus próximos partidos."],
+        ["Introdueix manualment les dades del partit amistós.", "Introduce manualmente los datos del partido amistoso."],
+        ["Selecciona un equip; podràs ajustar les dades a mà.", "Selecciona un equipo; podrás ajustar los datos manualmente."],
+        ["La FCF no ha retornat equips de futbol sala.", "La FCF no devolvió equipos de fútbol sala."],
+        ["No s’han pogut carregar els equips. Pots continuar omplint les dades a mà.", "No se pudieron cargar los equipos. Puedes introducir los datos manualmente."],
+        ["Consultant les properes jornades a la FCF…", "Consultando las próximas jornadas en la FCF…"],
+        ["Selecciona una jornada per carregar-ne les dades i els escuts.", "Selecciona una jornada para cargar sus datos y escudos."],
+        ["La FCF no té partits futurs programats per a aquest equip.", "La FCF no tiene partidos futuros programados para este equipo."],
+        ["No s’han pogut carregar els partits. Pots continuar omplint les dades a mà.", "No se pudieron cargar los partidos. Puedes introducir los datos manualmente."],
+        ["Dades i escuts carregats; consultant les camisetes dels dos equips…", "Datos y escudos cargados; consultando las camisetas de ambos equipos…"],
+        ["Partit i camisetes carregats. Pots editar qualsevol camp.", "Partido y camisetas cargados. Puedes editar cualquier campo."],
+        ["Partit carregat, però no s’han pogut consultar les camisetes.", "Partido cargado, pero no se pudieron consultar las camisetas."],
+        ["Convocatòria copiada. Ja la pots enganxar al grup.", "Convocatoria copiada. Ya puedes pegarla en el grupo."],
+        ["No s’ha pogut copiar automàticament. Selecciona i copia el text de l’avís.", "No se pudo copiar automáticamente. Selecciona y copia el texto del aviso."],
+        ["Per crear el calendari cal indicar la data i l’hora del partit.", "Para crear el calendario hay que indicar la fecha y la hora del partido."],
+        ["Fitxer de calendari descarregat.", "Archivo de calendario descargado."],
+        ["He importat", "He importado"], ["Revisa les dades abans de compartir.", "Revisa los datos antes de compartir."],
+        ["Captura preparada:", "Imagen preparada:"], ["Revisa’ls.", "Revísalos."],
+        ["No s’han pogut consultar les equipacions a la FCF.", "No se pudieron consultar las equipaciones en la FCF."],
+        ["Primer tria l’equip", "Primero elige un equipo"], ["No hi ha partits propers", "No hay próximos partidos"],
+      ];
+      const TEXT_LOOKUP = new Map();
+      for (const [ca, es] of TEXT_PAIRS) {
+        TEXT_LOOKUP.set(ca, { ca, es });
+        TEXT_LOOKUP.set(es, { ca, es });
+      }
+      let language = "ca";
+      try { language = localStorage.getItem("futsal-terrassa-language") === "es" ? "es" : "ca"; } catch {}
+      const translateLiteral = (value) => TEXT_LOOKUP.get(value)?.[language] || value;
+      const t = (catalan, spanish) => language === "es" ? spanish : catalan;
+      function applyLanguage() {
+        document.documentElement.lang = language;
+        document.title = language === "es" ? "Convocatorias | Fundació Terrassa FC 1906" : "Convocatòries | Fundació Terrassa FC 1906";
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        let node;
+        while ((node = walker.nextNode())) {
+          if (["SCRIPT", "STYLE", "TEXTAREA"].includes(node.parentElement?.tagName)) continue;
+          const original = node.nodeValue;
+          const trimmed = original.trim();
+          const translated = translateLiteral(trimmed);
+          if (translated !== trimmed) node.nodeValue = original.replace(trimmed, translated);
+        }
+        for (const element of document.querySelectorAll("[placeholder], [title], [aria-label], [alt]")) {
+          for (const attribute of ["placeholder", "title", "aria-label", "alt"]) {
+            if (element.hasAttribute(attribute)) element.setAttribute(attribute, translateLiteral(element.getAttribute(attribute)));
+          }
+        }
+        const notes = byId("notes");
+        notes.value = notes.value.split(/\r?\n/).map(translateLiteral).join("\n");
+        byId("language-ca").setAttribute("aria-pressed", String(language === "ca"));
+        byId("language-es").setAttribute("aria-pressed", String(language === "es"));
+      }
+      function setLanguage(nextLanguage) {
+        language = nextLanguage === "es" ? "es" : "ca";
+        try { localStorage.setItem("futsal-terrassa-language", language); } catch {}
+        applyLanguage();
+        refreshTeamOptions();
+        refreshMatchOptions();
+        updateKitInstructions();
+        render();
+      }
+      byId("language-ca").addEventListener("click", () => setLanguage("ca"));
+      byId("language-es").addEventListener("click", () => setLanguage("es"));
+      const fields = ["team", "competition", "jornada", "home", "away", "date", "time", "arrival", "venue", "map-url", "notes", "players"];
+      const months = {
+        ca: ["gener", "febrer", "març", "abril", "maig", "juny", "juliol", "agost", "setembre", "octubre", "novembre", "desembre"],
+        es: ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"],
+      };
+      const weekdays = {
+        ca: ["diumenge", "dilluns", "dimarts", "dimecres", "dijous", "divendres", "dissabte"],
+        es: ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"],
+      };
+      let arrivalManuallySet = false;
+      let mode = "league";
+      let clubTeamsLoaded = false;
+      let clubTeamsLoading = false;
+      let clubMatches = [];
+      let clubMatchRequest = 0;
+      let fcfRosterRequest = 0;
+      let fcfRoster = [];
+      let selectedKitRequest = 0;
+      let selectedMatch = null;
+      let selectedMatchEquipacions = { local: [], visitant: [] };
+      const FCF_API_ROOT = "https://www.fcf.cat/api/clubs";
+      const FCF_CLUB_API = "https://www.fcf.cat/api/clubs/6569";
+      const FCF_CREST_BASE = "https://files.fcf.cat/escudos/clubes/escudos/";
+      async function fetchFcfJson(url) {
+        const response = await fetch(url, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(12000) });
+        if (!response.ok) throw new Error("La FCF no ha respost correctament");
+        return response.json();
+      }
+      function shortTeamName(category, letter, fallback = "") {
+        const normalized = String(category || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+        const categoryName = /\bJUVENIL\b/.test(normalized) ? "Juvenil"
+          : /\bCADET\b/.test(normalized) ? t("Cadet", "Cadete")
+          : /\bINFANTIL\b/.test(normalized) ? "Infantil"
+          : /\bALEVI\b/.test(normalized) ? t("Aleví", "Alevín")
+          : /\bBENJAMI\b/.test(normalized) ? t("Benjamí", "Benjamín")
+          : /DIVISIO HONOR/.test(normalized) ? t("Sènior", "Senior")
+          : String(category || fallback).trim();
+        const teamLetter = String(letter || "").trim();
+        return [categoryName, teamLetter].filter(Boolean).join(" ") || String(fallback || "").trim();
+      }
+      function refreshTeamOptions() {
+        const select = byId("club-team");
+        const selectedId = select.value;
+        const placeholder = select.options[0];
+        if (placeholder && !placeholder.value && clubTeamsLoaded) placeholder.textContent = `${t("Tria l’equip", "Elige equipo")} (${select.options.length - 1})`;
+        for (const option of select.options) {
+          if (!option.value) continue;
+          const shortName = shortTeamName(option.dataset.categoria, option.dataset.lletra, option.dataset.nom || option.textContent);
+          option.textContent = shortName;
+          option.dataset.nom = shortName;
+          if (option.value === selectedId) byId("team").value = shortName;
+        }
+      }
+      function refreshMatchOptions() {
+        if (!clubMatches.length) return;
+        const select = byId("club-match");
+        const selectedId = select.value;
+        const options = clubMatches.map((match) => {
+          const date = parseDate(match.data);
+          const dateLabel = date ? `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}` : match.data;
+          const round = match.jornada ? `J${match.jornada}` : t("Amistós", "Amistoso");
+          return new Option(`${round} · ${dateLabel} ${match.hora} · ${match.local} – ${match.visitant}`, match.id);
+        });
+        select.replaceChildren(new Option(`${t("Tria un partit", "Elige un partido")} (${options.length} ${t("propers", "próximos")})`, ""), ...options);
+        select.disabled = false;
+        if (options.some((option) => option.value === selectedId)) select.value = selectedId;
+      }
+      async function fetchClubTeams() {
+        if (location.protocol !== "file:") {
+          try {
+            const response = await fetch("/api/equips", { signal: AbortSignal.timeout(12000) });
+            const data = await response.json();
+            if (response.ok && Array.isArray(data.equips)) return data.equips;
+          } catch {}
+        }
+        const payload = await fetchFcfJson(FCF_CLUB_API);
+        if (!Array.isArray(payload?.data?.teams)) throw new Error("La resposta de la FCF no té equips");
+        return payload.data.teams
+          .filter((team) => /futbol\s+sala/i.test(String(team.categoria_nombre || "")))
+          .map((team) => {
+            const nom = String(team.nombre_equipo || "").trim();
+            const lletra = String(team.letra_equipo || "").trim();
+            const categoria = String(team.categoria_nombre || "").trim();
+            return { id: String(team.codequipo || ""), nom, lletra, categoria, etiqueta: `${categoria}${lletra ? ` · ${lletra}` : ""}` };
+          })
+          .filter((team) => team.id && team.nom && team.categoria);
+      }
+      async function fetchUpcomingMatches(equip) {
+        if (location.protocol !== "file:") {
+          try {
+            const response = await fetch(`/api/partits?equip=${encodeURIComponent(equip)}`, { signal: AbortSignal.timeout(12000) });
+            const data = await response.json();
+            if (response.ok && Array.isArray(data.partits)) return data;
+          } catch {}
+        }
+        const payload = await fetchFcfJson(`${FCF_CLUB_API}/team/${encodeURIComponent(equip)}`);
+        const data = payload?.data;
+        if (!Array.isArray(data?.matches)) throw new Error("La resposta de partits de la FCF no té el format esperat");
+        const nowParts = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Madrid", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" }).formatToParts(new Date());
+        const now = Object.fromEntries(nowParts.map(({ type, value }) => [type, value]));
+        const ara = `${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}:${now.second}`;
+        const competition = String(data.info?.CATEGORIA_EQUIPO || "").trim();
+        const escut = (file) => /^[\w.-]+\.(?:png|jpe?g|webp|svg)$/i.test(String(file || "")) ? FCF_CREST_BASE + encodeURIComponent(file) : "";
+        const partits = data.matches
+          .filter((match) => String(match.COMIENZO1 || "") >= ara)
+          .sort((a, b) => String(a.COMIENZO1).localeCompare(String(b.COMIENZO1)))
+          .map((match) => {
+            const inici = String(match.COMIENZO1 || "").match(/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}):\d{2}$/);
+            const id = String(match.CODACTA || "").trim();
+            const local = String(match.NOMBRE_CASA || "").trim();
+            const visitant = String(match.NOMBRE_FUERA || "").trim();
+            if (!inici || !id || !local || !visitant) return null;
+            const jornada = Number(match.JORNADA);
+            const latitud = Number(match.LATITUD);
+            const longitud = Number(match.LONGITUD);
+            return {
+              id, jornada: Number.isInteger(jornada) && jornada > 0 ? jornada : "", data: inici[1], hora: inici[2], local, visitant,
+              clubIdLocal: String(match.CODCLUB_CASA || "").trim(), equipIdLocal: String(match.CODEQUIPO_CASA || "").trim(),
+              clubIdVisitant: String(match.CODCLUB_FUERA || "").trim(), equipIdVisitant: String(match.CODEQUIPO_FUERA || "").trim(),
+              escudoLocal: escut(match.ESCUDO_CASA), escudoVisitant: escut(match.ESCUDO_FUERA), pavello: String(match.CAMPO || "").trim(),
+              ubicacio: Number.isFinite(latitud) && Number.isFinite(longitud) ? `https://maps.google.com/?q=${latitud},${longitud}` : "",
+              competicio: String(match.NOMBRE_COMPETICION || competition).trim(), amistos: jornada === 0,
+            };
+          })
+          .filter(Boolean)
+          .slice(0, 10);
+        const equipacions = (Array.isArray(data.kits) ? data.kits : [])
+          .filter((kit) => kit && (kit.PRINCIPAL === "1" || kit.PRINCIPAL === "2"))
+          .map((kit) => ({
+            nom: kit.PRINCIPAL === "1" ? "Primera" : "Segona",
+            samarreta: String(kit.COLOR_CAMISETA1 || kit.COLOR_CAMISETA2 || "").trim(),
+          }))
+          .filter((kit) => kit.samarreta);
+        return { partits, equipacions };
+      }
+      async function fetchTeamRoster(equip) {
+        if (location.protocol !== "file:") {
+          try {
+            const response = await fetch(`/api/plantilla?equip=${encodeURIComponent(equip)}`, { signal: AbortSignal.timeout(12000) });
+            const data = await response.json();
+            if (response.ok && Array.isArray(data.jugadors)) return data.jugadors;
+          } catch {}
+        }
+        const payload = await fetchFcfJson(`${FCF_CLUB_API}/team/${encodeURIComponent(equip)}`);
+        return Array.isArray(payload?.data?.players)
+          ? payload.data.players.map((player) => String(player?.NOMBRE || "").trim()).filter((name) => name && !/^JUGADOR(?:\/A)?$/i.test(name))
+          : [];
+      }
+      function mapFcfKits(kits) {
+        if (!Array.isArray(kits)) return [];
+        return kits
+          .filter((kit) => kit && (kit.PRINCIPAL === "1" || kit.PRINCIPAL === "2"))
+          .map((kit) => ({
+            nom: kit.PRINCIPAL === "1" ? "Primera" : "Segona",
+            colors: [...new Set([kit.COLOR_CAMISETA1, kit.COLOR_CAMISETA2]
+              .map((color) => String(color || "").trim().toUpperCase())
+              .filter((color) => /^#[\da-f]{6}$/i.test(color)))],
+          }))
+          .filter((kit) => kit.colors.length);
+      }
+      async function fetchMatchKits(match) {
+        const identifiers = [match.clubIdLocal, match.equipIdLocal, match.clubIdVisitant, match.equipIdVisitant];
+        if (identifiers.some((id) => !/^\d{1,12}$/.test(String(id || "")))) return { local: [], visitant: [] };
+        if (location.protocol !== "file:") {
+          try {
+            const params = new URLSearchParams({ clubLocal: match.clubIdLocal, equipLocal: match.equipIdLocal, clubVisitant: match.clubIdVisitant, equipVisitant: match.equipIdVisitant });
+            const response = await fetch(`/api/equipacions?${params}`, { signal: AbortSignal.timeout(12000) });
+            const data = await response.json();
+            if (response.ok && data.equipacions) return data.equipacions;
+          } catch {}
+        }
+        const [local, visitant] = await Promise.all([
+          fetchFcfJson(`${FCF_API_ROOT}/${match.clubIdLocal}/team/${match.equipIdLocal}`),
+          fetchFcfJson(`${FCF_API_ROOT}/${match.clubIdVisitant}/team/${match.equipIdVisitant}`),
+        ]);
+        return { local: mapFcfKits(local.data?.kits), visitant: mapFcfKits(visitant.data?.kits) };
+      }
+      function parseDate(value) {
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+        return match ? new Date(+match[1], +match[2] - 1, +match[3]) : null;
+      }
+      function formatDate(value) {
+        const date = parseDate(value);
+        if (!date) return "";
+        const month = months[language][date.getMonth()];
+        const preposition = language === "es" ? "de " : /^[aeiouàèéíïòóú]/i.test(month) ? "d'" : "de ";
+        return `${weekdays[language][date.getDay()]} ${date.getDate()} ${preposition}${month}`;
+      }
+      function timeBeforeKickoff(value, offsetMinutes = 45) {
+        const match = /^(\d{2}):(\d{2})$/.exec(value || "");
+        if (!match) return "";
+        const total = (+match[1] * 60 + +match[2] - Number(offsetMinutes) + 1440) % 1440;
+        return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+      }
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, (char) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[char]);
+      }
+      function colorEmoji(hex) {
+        const match = /^#([\da-f]{6})$/i.exec(hex || "");
+        if (!match) return "";
+        const rgb = match[1].match(/../g).map((value) => parseInt(value, 16));
+        const palette = [
+          { rgb: [255, 255, 255], emoji: "⬜" }, { rgb: [0, 0, 0], emoji: "⬛" },
+          { rgb: [255, 0, 0], emoji: "🟥" }, { rgb: [255, 165, 0], emoji: "🟧" },
+          { rgb: [255, 255, 0], emoji: "🟨" }, { rgb: [0, 128, 0], emoji: "🟩" },
+          { rgb: [0, 0, 255], emoji: "🟦" }, { rgb: [128, 0, 128], emoji: "🟪" },
+          { rgb: [165, 42, 42], emoji: "🟫" }, { rgb: [128, 128, 128], emoji: "🩶" },
+        ];
+        const nearest = palette.reduce((best, color) => {
+          const distance = color.rgb.reduce((sum, channel, index) => sum + (channel - rgb[index]) ** 2, 0);
+          return distance < best.distance ? { distance, emoji: color.emoji } : best;
+        }, { distance: Infinity, emoji: "" });
+        return nearest.emoji;
+      }
+      function selectedKitColorLines() {
+        if (!selectedMatch) return [];
+        const teamId = byId("club-team").value;
+        const side = selectedMatch.equipIdLocal === teamId ? "local"
+          : selectedMatch.equipIdVisitant === teamId ? "visitant" : "";
+        if (!side) return [];
+        return [
+          [byId("kit-choice-first").checked, "Primera", t("1a equipació", "1a equipación")],
+          [byId("kit-choice-second").checked, "Segona", t("2a equipació", "2a equipación")],
+        ].flatMap(([checked, kitName, label]) => {
+          if (!checked) return [];
+          const kit = selectedMatchEquipacions[side].find((item) => item.nom === kitName);
+          const colors = (kit?.colors || []).map(colorEmoji).filter(Boolean).join("");
+          return colors ? [`👕 ${label}: ${colors}`] : [];
+        });
+      }
+      function messageText() {
+        const team = byId("team").value.trim();
+        const competition = byId("competition").value.trim();
+        const home = byId("home").value.trim();
+        const away = byId("away").value.trim();
+        const venue = byId("venue").value.trim();
+        const mapUrl = byId("map-url").value.trim();
+        const time = byId("time").value;
+        const arrival = byId("arrival").value;
+        const date = formatDate(byId("date").value);
+        const notes = byId("notes").value.trim();
+        const matchType = mode === "league" && !selectedMatch?.amistos
+          ? (byId("jornada").value ? `${t("Jornada", "Jornada")} ${byId("jornada").value}` : t("Competició", "Competición"))
+          : t("Amistós", "Amistoso");
+        const lines = [t("⚽ CONVOCATÒRIA PARTIT", "⚽ CONVOCATORIA PARTIDO"), matchType];
+        if (mode !== "league" && team) lines.push(team);
+        if (mode === "league" && competition) lines.push(competition);
+        lines.push(`${home || t("[Equip local]", "[Equipo local]")} 🆚 ${away || t("[Equip visitant]", "[Equipo visitante]")}`);
+        lines.push(date ? `📅 ${date.charAt(0).toUpperCase()}${date.slice(1)}` : `📅 ${t("[Data del partit]", "[Fecha del partido]")}`);
+        if (venue) lines.push(`🏟️ ${venue}`);
+        if (mapUrl) lines.push(`📍 ${mapUrl}`);
+        if (time) lines.push(`🕔 ${t("Partit", "Partido")}: ${time}`);
+        if (arrival) lines.push(`⏱️ ${t("Convocatòria", "Convocatoria")}: ${arrival}`);
+        if (notes) {
+          const noteLines = notes.split(/\r?\n/);
+          const kitNote = noteLines.find((line) => kitChoicePrefixes.some((prefix) => line.startsWith(prefix)));
+          if (kitNote) {
+            lines.push(`🎽 ${kitNote}`);
+            lines.push(...selectedKitColorLines());
+            const otherNotes = noteLines.filter((line) => line !== kitNote);
+            if (otherNotes.length) lines.push(`🎽 ${otherNotes.join("\n")}`);
+          } else {
+            lines.push(`🎽 ${notes}`);
+          }
+        }
+        lines.push(`✅ ${t("Confirmeu assistència", "Confirma asistencia")}`);
+        return lines.join("\n");
+      }
+      function attendanceMessageText() {
+        const players = byId("players").value.split(/\r?\n/).map((name) => name.trim()).filter(Boolean);
+        if (!players.length) return "";
+        const date = formatDate(byId("date").value);
+        const dateLine = date
+          ? `📅 ${date.charAt(0).toUpperCase()}${date.slice(1)}`
+          : `📅 ${t("[Data del partit]", "[Fecha del partido]")}`;
+        const lines = [dateLine];
+        lines.push(...players.map((name, index) => `${index + 1}. ${name}`));
+        return lines.join("\n");
+      }
+      function messagesText() {
+        return [messageText(), attendanceMessageText()].filter(Boolean).join("\n\n");
+      }
+      function render() {
+        const text = messagesText();
+        let html = escapeHtml(text);
+        for (const placeholder of ["[Equip local]", "[Equip visitant]", "[Data del partit]"]) html = html.replace(placeholder, `<span class="missing">${placeholder}</span>`);
+        byId("message").innerHTML = html;
+        byId("copy").textContent = byId("players").value.trim() ? t("Copiar missatge complet", "Copiar mensaje completo") : t("Copiar convocatòria", "Copiar convocatoria");
+        byId("whatsapp").href = "https://wa.me/?text=" + encodeURIComponent(text);
+        const date = parseDate(byId("date").value);
+        byId("month").textContent = date ? months[language][date.getMonth()].slice(0, 3) : "";
+        byId("day").textContent = date ? String(date.getDate()) : "";
+        const title = [mode === "league" && !selectedMatch?.amistos ? (byId("jornada").value ? `${t("Jornada", "Jornada")} ${byId("jornada").value}` : t("Competició", "Competición")) : t("Amistós", "Amistoso"), byId("team").value.trim(), [byId("home").value.trim(), byId("away").value.trim()].filter(Boolean).join(" – ")].filter(Boolean).join(" · ") || t("Partit de futbol sala", "Partido de fútbol sala");
+        byId("event-title").textContent = title;
+        byId("event-time").textContent = date && byId("time").value ? `${formatDate(byId("date").value)} · ${byId("arrival").value || "–"} – ${byId("time").value}` : t("Completa la data i l’hora del partit.", "Completa la fecha y la hora del partido.");
+        byId("event-place").textContent = byId("venue").value.trim();
+      }
+      byId("mode-pre").addEventListener("click", () => setMode("pre"));
+      byId("mode-league").addEventListener("click", () => setMode("league"));
+      function setMode(nextMode) {
+        if (mode !== nextMode) clearMatchFields();
+        mode = nextMode;
+        byId("mode-pre").setAttribute("aria-pressed", String(mode === "pre"));
+        byId("mode-league").setAttribute("aria-pressed", String(mode === "league"));
+        byId("competition-field").hidden = mode !== "league";
+        byId("jornada-field").hidden = mode !== "league";
+        byId("club-team-field").hidden = mode !== "league";
+        byId("club-match-field").hidden = mode !== "league";
+        byId("source-hint").textContent = mode === "league" ? t("Tria un equip i una competició per carregar-ne els propers partits.", "Elige un equipo y una competición para cargar sus próximos partidos.") : t("Introdueix manualment les dades del partit amistós.", "Introduce manualmente los datos del partido amistoso.");
+        const hasKits = [...byId("team-kits").querySelectorAll(".kit")].some((kit) => !kit.hidden);
+        byId("team-kits").hidden = mode !== "league" || !hasKits;
+        if (mode === "league") {
+          if (clubTeamsLoaded) {
+            byId("club-team-status").className = "status";
+            byId("club-team-status").textContent = t("Selecciona el teu equip; podràs ajustar les dades a mà.", "Selecciona tu equipo; podrás ajustar los datos manualmente.");
+          }
+          loadClubTeams();
+        }
+        render();
+      }
+      function clearMatchFields() {
+        for (const id of fields) byId(id).value = "";
+        byId("copy-status").className = "status";
+        byId("copy-status").textContent = "";
+        arrivalManuallySet = false;
+        byId("arrival-offset").value = "45";
+        byId("club-team").selectedIndex = 0;
+        byId("club-match").replaceChildren(new Option(t("Primer tria l’equip", "Primero elige un equipo"), ""));
+        byId("club-match").disabled = true;
+        byId("club-team-status").className = "status";
+        byId("club-team-status").textContent = "";
+        byId("club-match-status").className = "status";
+        byId("club-match-status").textContent = "";
+        byId("kit-choice-first").checked = true;
+        byId("kit-choice-second").checked = true;
+        byId("kit-choice-both").checked = true;
+        clubMatches = [];
+        clubMatchRequest++;
+        selectedKitRequest++;
+        selectedMatch = null;
+        selectedMatchEquipacions = { local: [], visitant: [] };
+        hideFcfRoster();
+        clearCrests();
+        renderKits({});
+        updateKitInstructions();
+      }
+      async function loadClubTeams() {
+        if (clubTeamsLoaded || clubTeamsLoading) return;
+        clubTeamsLoading = true;
+        const select = byId("club-team");
+        const status = byId("club-team-status");
+        select.disabled = true;
+        status.className = "status";
+        status.textContent = t("Carregant equips de futbol sala de la FCF…", "Cargando equipos de fútbol sala de la FCF…");
+        try {
+          const equips = await fetchClubTeams();
+          const options = equips.map((team) => {
+            const shortName = shortTeamName(team.categoria, team.lletra, team.nom || team.etiqueta);
+            const option = new Option(shortName, team.id);
+            option.dataset.nom = shortName;
+            option.dataset.categoria = team.categoria || "";
+            option.dataset.lletra = team.lletra || "";
+            return option;
+          });
+          select.replaceChildren(new Option(`${t("Tria l’equip", "Elige equipo")} (${options.length})`, ""), ...options);
+          select.disabled = options.length === 0;
+          clubTeamsLoaded = options.length > 0;
+          status.textContent = options.length ? t("Selecciona el teu equip; podràs ajustar les dades a mà.", "Selecciona tu equipo; podrás ajustar los datos manualmente.") : t("La FCF no ha retornat equips de futbol sala.", "La FCF no devolvió equipos de fútbol sala.");
+          if (!options.length) status.className = "status error";
+        } catch {
+          select.replaceChildren(new Option(t("No s’han pogut carregar els equips", "No se pudieron cargar los equipos"), ""));
+          status.className = "status error";
+          status.textContent = t("No s’han pogut carregar els equips. Pots continuar omplint les dades a mà.", "No se pudieron cargar los equipos. Puedes introducir los datos manualmente.");
+        } finally {
+          clubTeamsLoading = false;
+        }
+      }
+      byId("club-team").addEventListener("change", (event) => {
+        const option = event.target.selectedOptions[0];
+        byId("players").value = "";
+        hideFcfRoster();
+        byId("club-match").replaceChildren(new Option(t("Carregant partits…", "Cargando partidos…"), ""));
+        byId("club-match").disabled = true;
+        byId("club-match-status").textContent = "";
+        selectedKitRequest++;
+        selectedMatch = null;
+        selectedMatchEquipacions = { local: [], visitant: [] };
+        renderKits({});
+        clearCrests();
+        if (!option?.value) {
+          clubMatches = [];
+          clubMatchRequest++;
+          render();
+          return;
+        }
+        byId("team").value = option.dataset.nom || option.textContent;
+        if (option.dataset.categoria) byId("competition").value = option.dataset.categoria;
+        showFcfRosterLoading();
+        loadFcfRoster(option.value);
+        loadTeamMatches(option.value);
+        render();
+      });
+      function hideFcfRoster() {
+        fcfRosterRequest++;
+        fcfRoster = [];
+        byId("fcf-roster").hidden = true;
+        byId("fcf-roster-list").hidden = true;
+        byId("fcf-roster-list").replaceChildren();
+        byId("fcf-roster-status").textContent = "";
+        byId("use-fcf-roster").disabled = true;
+      }
+      function showFcfRosterLoading() {
+        byId("fcf-roster").hidden = false;
+        byId("fcf-roster-status").className = "status";
+        byId("fcf-roster-status").textContent = t("Consultant la plantilla de la FCF…", "Consultando la plantilla de la FCF…");
+      }
+      async function loadFcfRoster(equip) {
+        const request = ++fcfRosterRequest;
+        try {
+          const names = await fetchTeamRoster(equip);
+          if (request !== fcfRosterRequest) return;
+          showFcfRoster(names);
+        } catch {
+          if (request !== fcfRosterRequest) return;
+          byId("fcf-roster-status").className = "status error";
+          byId("fcf-roster-status").textContent = t("No s’ha pogut consultar la plantilla a la FCF.", "No se pudo consultar la plantilla en la FCF.");
+        }
+      }
+      function showFcfRoster(names) {
+        fcfRoster = Array.isArray(names) ? names.map((name) => String(name || "").trim()).filter(Boolean) : [];
+        const list = byId("fcf-roster-list");
+        list.replaceChildren(...fcfRoster.map((name) => {
+          const item = document.createElement("li");
+          item.textContent = name;
+          return item;
+        }));
+        list.hidden = fcfRoster.length === 0;
+        byId("fcf-roster").hidden = false;
+        byId("fcf-roster-status").className = fcfRoster.length ? "status" : "status error";
+        byId("fcf-roster-status").textContent = fcfRoster.length
+          ? t(`Plantilla FCF: ${fcfRoster.length} jugadors.`, `Plantilla FCF: ${fcfRoster.length} jugadores.`)
+          : t("La FCF no publica la plantilla d’aquest equip.", "La FCF no publica la plantilla de este equipo.");
+        byId("use-fcf-roster").disabled = fcfRoster.length === 0;
+      }
+      byId("use-fcf-roster").addEventListener("click", () => {
+        if (!fcfRoster.length) return;
+        byId("players").value = fcfRoster.join("\n");
+        render();
+      });
+      async function loadTeamMatches(equip) {
+        const request = ++clubMatchRequest;
+        const select = byId("club-match");
+        const status = byId("club-match-status");
+        select.disabled = true;
+        select.replaceChildren(new Option(t("Carregant els propers partits…", "Cargando los próximos partidos…"), ""));
+        status.className = "status";
+        status.textContent = t("Consultant les properes jornades a la FCF…", "Consultando las próximas jornadas en la FCF…");
+        try {
+          const data = await fetchUpcomingMatches(equip);
+          if (request !== clubMatchRequest) return;
+          if (!Array.isArray(data.partits)) throw new Error("La resposta no conté partits");
+          clubMatches = data.partits;
+          if (clubMatches.length) refreshMatchOptions();
+          else select.replaceChildren(new Option(t("No hi ha partits propers", "No hay próximos partidos"), ""));
+          select.disabled = clubMatches.length === 0;
+          status.textContent = clubMatches.length ? t("Selecciona una jornada per carregar-ne les dades i els escuts.", "Selecciona una jornada para cargar sus datos y escudos.") : t("La FCF no té partits futurs programats per a aquest equip.", "La FCF no tiene partidos futuros programados para este equipo.");
+          if (!clubMatches.length) status.className = "status error";
+        } catch {
+          if (request !== clubMatchRequest) return;
+          clubMatches = [];
+          select.replaceChildren(new Option(t("No s’han pogut carregar els partits", "No se pudieron cargar los partidos"), ""));
+          status.className = "status error";
+          status.textContent = t("No s’han pogut carregar els partits. Pots continuar omplint les dades a mà.", "No se pudieron cargar los partidos. Puedes introducir los datos manualmente.");
+        }
+      }
+      function renderKits(equipacions = {}) {
+        const nomLocal = byId("home").value.trim() || "Local";
+        const nomVisitant = byId("away").value.trim() || "Visitant";
+        byId("kit-home-name").textContent = nomLocal;
+        byId("kit-away-name").textContent = nomVisitant;
+        const rows = [
+          ["home-first", "1a equipació", (equipacions.local || []).find((kit) => kit.nom === "Primera")],
+          ["home-second", "2a equipació", (equipacions.local || []).find((kit) => kit.nom === "Segona")],
+          ["away-first", "1a equipació", (equipacions.visitant || []).find((kit) => kit.nom === "Primera")],
+          ["away-second", "2a equipació", (equipacions.visitant || []).find((kit) => kit.nom === "Segona")],
+        ];
+        for (const [key, label, kit] of rows) {
+          const row = byId(`kit-${key}`);
+          row.hidden = !kit;
+          if (!kit) continue;
+          const colors = kit.colors.filter((color) => /^#[\da-f]{6}$/i.test(color));
+          byId(`kit-${key}-swatch`).style.background = colors.length > 1
+            ? `linear-gradient(90deg, ${colors[0]} 50%, ${colors[1]} 50%)`
+            : colors[0] || "transparent";
+          byId(`kit-${key}-label`).textContent = label;
+        }
+        byId("team-kits").hidden = mode !== "league" || rows.every(([, , kit]) => !kit);
+      }
+      function setCrest(side, url, name) {
+        const image = byId(`${side}-crest`);
+        image.hidden = !url;
+        image.alt = url ? `Escut de ${name}` : "";
+        image.onerror = () => { image.hidden = true; };
+        if (url) image.src = url;
+        else image.removeAttribute("src");
+      }
+      function clearCrests() {
+        setCrest("home", "", "");
+        setCrest("away", "", "");
+      }
+      byId("club-match").addEventListener("change", async (event) => {
+        const match = clubMatches.find((fixture) => fixture.id === event.target.value);
+        if (!match) return;
+        selectedMatch = match;
+        selectedMatchEquipacions = { local: [], visitant: [] };
+        const request = ++selectedKitRequest;
+        byId("jornada").value = match.jornada;
+        byId("home").value = match.local;
+        byId("away").value = match.visitant;
+        byId("date").value = match.data;
+        byId("time").value = match.hora;
+        byId("arrival").value = timeBeforeKickoff(match.hora, byId("arrival-offset").value);
+        byId("venue").value = match.pavello;
+        byId("map-url").value = match.ubicacio;
+        if (match.competicio) byId("competition").value = match.competicio;
+        arrivalManuallySet = false;
+        setCrest("home", match.escudoLocal, match.local);
+        setCrest("away", match.escudoVisitant, match.visitant);
+        byId("club-match-status").className = "status";
+        byId("club-match-status").textContent = "Dades i escuts carregats; consultant les camisetes dels dos equips…";
+        renderKits({});
+        render();
+        try {
+          const equipacions = await fetchMatchKits(match);
+          if (request !== selectedKitRequest) return;
+          selectedMatchEquipacions = equipacions;
+          renderKits(equipacions);
+          byId("club-match-status").className = "status success";
+          byId("club-match-status").textContent = "Partit i camisetes carregats. Pots editar qualsevol camp.";
+          render();
+        } catch {
+          if (request !== selectedKitRequest) return;
+          selectedMatchEquipacions = { local: [], visitant: [] };
+          byId("club-match-status").className = "status error";
+          byId("club-match-status").textContent = "Partit carregat, però no s’han pogut consultar les camisetes.";
+          render();
+        }
+      });
+      byId("arrival-offset").addEventListener("change", () => {
+        arrivalManuallySet = false;
+        byId("arrival").value = timeBeforeKickoff(byId("time").value, byId("arrival-offset").value);
+        render();
+      });
+      for (const id of fields) byId(id).addEventListener("input", () => {
+        if (id === "arrival") arrivalManuallySet = true;
+        if (id === "time" && !arrivalManuallySet) byId("arrival").value = timeBeforeKickoff(byId("time").value, byId("arrival-offset").value);
+        render();
+      });
+      const kitChoicePrefixes = ["Equipació: ", "Equipación: "];
+      function updateKitInstructions() {
+        const first = byId("kit-choice-first").checked;
+        const second = byId("kit-choice-second").checked;
+        const both = byId("kit-choice-both").checked;
+        const selection = both ? t("1a i 2a equipacions", "1a y 2a equipaciones")
+          : [first && t("1a equipació", "1a equipación"), second && t("2a equipació", "2a equipación")].filter(Boolean).join(" y ");
+        const notes = byId("notes");
+        const lines = notes.value.split(/\r?\n/).filter((line) => !kitChoicePrefixes.some((prefix) => line.startsWith(prefix)));
+        if (selection) lines.unshift(`${t("Equipació: ", "Equipación: ")}${selection}`);
+        notes.value = lines.join("\n");
+      }
+      for (const id of ["kit-choice-first", "kit-choice-second", "kit-choice-both"]) {
+        byId(id).addEventListener("change", () => {
+          if (id === "kit-choice-both") {
+            if (byId(id).checked) {
+              byId("kit-choice-first").checked = true;
+              byId("kit-choice-second").checked = true;
+            } else if (byId("kit-choice-first").checked && byId("kit-choice-second").checked) {
+              byId("kit-choice-second").checked = false;
+            } else if (!byId("kit-choice-first").checked && !byId("kit-choice-second").checked) {
+              byId("kit-choice-first").checked = true;
+            }
+          } else {
+            if (!byId("kit-choice-first").checked && !byId("kit-choice-second").checked) byId(id).checked = true;
+            byId("kit-choice-both").checked = byId("kit-choice-first").checked && byId("kit-choice-second").checked;
+          }
+          updateKitInstructions();
+          render();
+        });
+      }
+      updateKitInstructions();
+      byId("copy").addEventListener("click", async () => {
+        const status = byId("copy-status");
+        try {
+          await navigator.clipboard.writeText(messagesText());
+          status.className = "status success";
+          status.textContent = t("Missatges copiats. Ja els pots enganxar al grup.", "Mensajes copiados. Ya puedes pegarlos en el grupo.");
+        } catch {
+          status.className = "status error";
+          status.textContent = t("No s’han pogut copiar automàticament. Selecciona i copia els missatges.", "No se pudieron copiar automáticamente. Selecciona y copia los mensajes.");
+        }
+      });
+      function icsEscape(value) { return String(value).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n"); }
+      function icsTime(dateValue, timeValue, extraMinutes = 0) {
+        const date = parseDate(dateValue);
+        const [hours, minutes] = timeValue.split(":").map(Number);
+        date.setMinutes(hours * 60 + minutes + extraMinutes);
+        const pad = (n) => String(n).padStart(2, "0");
+        return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}T${pad(date.getHours())}${pad(date.getMinutes())}00`;
+      }
+      function downloadCalendar() {
+        const date = byId("date").value;
+        const time = byId("time").value;
+        if (!parseDate(date) || !/^\d{2}:\d{2}$/.test(time)) {
+          byId("copy-status").className = "status error";
+          byId("copy-status").textContent = "Per crear el calendari cal indicar la data i l’hora del partit.";
+          return;
+        }
+        const arrival = /^\d{2}:\d{2}$/.test(byId("arrival").value) ? byId("arrival").value : timeBeforeKickoff(time, byId("arrival-offset").value);
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, "0");
+        const stamp = `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}T${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}${pad(now.getUTCSeconds())}Z`;
+        const title = [mode === "league" && !selectedMatch?.amistos ? (byId("jornada").value ? `${t("Jornada", "Jornada")} ${byId("jornada").value}` : t("Competició", "Competición")) : t("Amistós", "Amistoso"), byId("team").value.trim(), [byId("home").value.trim(), byId("away").value.trim()].filter(Boolean).join(" – ")].filter(Boolean).join(" · ") || t("Partit de futbol sala", "Partido de fútbol sala");
+        const event = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Futbol Sala Terrassa//Convocatories//CA", "CALSCALE:GREGORIAN", "BEGIN:VTIMEZONE", "TZID:Europe/Madrid", "BEGIN:DAYLIGHT", "TZOFFSETFROM:+0100", "TZOFFSETTO:+0200", "TZNAME:CEST", "DTSTART:19700329T020000", "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU", "END:DAYLIGHT", "BEGIN:STANDARD", "TZOFFSETFROM:+0200", "TZOFFSETTO:+0100", "TZNAME:CET", "DTSTART:19701025T030000", "RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU", "END:STANDARD", "END:VTIMEZONE", "BEGIN:VEVENT", `UID:${Date.now()}@futsal-terrassa`, `DTSTAMP:${stamp}`, `DTSTART;TZID=Europe/Madrid:${icsTime(date, arrival)}`, `DTEND;TZID=Europe/Madrid:${icsTime(date, time, 90)}`, `SUMMARY:${icsEscape(title)}`, ...(byId("venue").value.trim() ? [`LOCATION:${icsEscape(byId("venue").value.trim())}`] : []), `DESCRIPTION:${icsEscape(messageText())}`, "END:VEVENT", "END:VCALENDAR"].join("\r\n") + "\r\n";
+        const blob = new Blob([event], { type:"text/calendar;charset=utf-8" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `convocatoria-${date}.ics`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        byId("copy-status").className = "status success";
+        byId("copy-status").textContent = "Fitxer de calendari descarregat.";
+      }
+      byId("download").addEventListener("click", downloadCalendar);
+      byId("calendar-download").addEventListener("click", downloadCalendar);
+      applyLanguage();
+      setMode("league");
+    })();
+  </script>
+</body>
+</html>
