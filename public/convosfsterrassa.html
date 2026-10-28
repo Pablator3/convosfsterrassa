@@ -86,6 +86,10 @@
     .status.error { color:var(--red-dark); } .status.success { color:var(--green); }
     .roster-tools { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 14px; margin-bottom:8px; }
     .roster-tools .status { margin:0; }
+    .players-head { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 14px; margin-bottom:8px; }
+    .players-head label { margin:0; }
+    .players-actions { display:flex; flex-wrap:wrap; gap:8px; margin-left:auto; }
+    .players-actions .button[hidden] { display:none; }
     .roster-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 20px; margin:0 0 14px; padding:12px 12px 12px 32px; background:var(--field); border:1px solid var(--line); border-radius:4px; font-size:13px; }
     .roster-list li { padding:2px 0; overflow-wrap:anywhere; }
     .preview { position:sticky; top:18px; min-width:0; padding-top:20px; border-top:2px solid var(--ink); }
@@ -205,10 +209,11 @@
           <div class="section-head"><span class="step">03</span><h3 id="players-heading">Jugadors disponibles</h3></div>
           <div class="roster-tools" id="fcf-roster" hidden>
             <p class="status" id="fcf-roster-status" role="status" aria-live="polite"></p>
-            <button class="button" id="use-fcf-roster" type="button" disabled>Afegir plantilla a la llista</button>
           </div>
           <ol class="roster-list" id="fcf-roster-list" hidden></ol>
-          <div class="field"><label for="players">Llista per confirmar assistència</label><textarea id="players" placeholder="Un jugador per línia"></textarea></div>
+          <div class="field">
+            <div class="players-head"><label for="players">Llista per confirmar assistència</label><div class="players-actions"><button class="button" id="use-fcf-roster" type="button" disabled hidden>Afegir plantilla a la llista</button><button class="button" id="clear-players" type="button">Netejar llista</button></div></div>
+            <textarea id="players" placeholder="Un jugador per línia"></textarea></div>
           <p class="hint">Es numerarà automàticament al missatge. Deixa-ho buit si encara no tens la llista.</p>
         </section>
       </div>
@@ -267,6 +272,7 @@
         ["Afegir plantilla a la llista", "Añadir plantilla a la lista"],
         ["Es numerarà automàticament al missatge. Deixa-ho buit si encara no tens la llista.", "Se numerará automáticamente en el mensaje. Déjalo vacío si aún no tienes la lista."],
         ["Avís per al grup", "Aviso para el grupo"],
+        ["Netejar llista", "Limpiar lista"],
         ["Copiar convocatòria", "Copiar convocatoria"], ["Copiar missatge complet", "Copiar mensaje completo"], ["Copiar ambdós missatges", "Copiar ambos mensajes"], ["Obrir WhatsApp", "Abrir WhatsApp"],
         ["Confirmació d’assistència", "Confirmación de asistencia"],
         ["Descarregar calendari .ics", "Descargar calendario .ics"], ["Descarregar cita .ics", "Descargar cita .ics"], ["Cita de calendari", "Cita del calendario"],
@@ -362,14 +368,6 @@
       let selectedKitRequest = 0;
       let selectedMatch = null;
       let selectedMatchEquipacions = { local: [], visitant: [] };
-      const FCF_API_ROOT = "https://www.fcf.cat/api/clubs";
-      const FCF_CLUB_API = "https://www.fcf.cat/api/clubs/6569";
-      const FCF_CREST_BASE = "https://files.fcf.cat/escudos/clubes/escudos/";
-      async function fetchFcfJson(url) {
-        const response = await fetch(url, { headers: { Accept: "application/json" }, signal: AbortSignal.timeout(12000) });
-        if (!response.ok) throw new Error("La FCF no ha respost correctament");
-        return response.json();
-      }
       function shortTeamName(category, letter, fallback = "") {
         const normalized = String(category || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
         const categoryName = /\bJUVENIL\b/.test(normalized) ? "Juvenil"
@@ -410,114 +408,31 @@
         if (options.some((option) => option.value === selectedId)) select.value = selectedId;
       }
       async function fetchClubTeams() {
-        if (location.protocol !== "file:") {
-          try {
-            const response = await fetch("/api/equips", { signal: AbortSignal.timeout(12000) });
-            const data = await response.json();
-            if (response.ok && Array.isArray(data.equips)) return data.equips;
-          } catch {}
-        }
-        const payload = await fetchFcfJson(FCF_CLUB_API);
-        if (!Array.isArray(payload?.data?.teams)) throw new Error("La resposta de la FCF no té equips");
-        return payload.data.teams
-          .filter((team) => /futbol\s+sala/i.test(String(team.categoria_nombre || "")))
-          .map((team) => {
-            const nom = String(team.nombre_equipo || "").trim();
-            const lletra = String(team.letra_equipo || "").trim();
-            const categoria = String(team.categoria_nombre || "").trim();
-            return { id: String(team.codequipo || ""), nom, lletra, categoria, etiqueta: `${categoria}${lletra ? ` · ${lletra}` : ""}` };
-          })
-          .filter((team) => team.id && team.nom && team.categoria);
+        const response = await fetch("/api/equips", { signal: AbortSignal.timeout(12000) });
+        const data = await response.json();
+        if (!response.ok || !Array.isArray(data.equips)) throw new Error("No s’han pogut carregar els equips");
+        return data.equips;
       }
       async function fetchUpcomingMatches(equip) {
-        if (location.protocol !== "file:") {
-          try {
-            const response = await fetch(`/api/partits?equip=${encodeURIComponent(equip)}`, { signal: AbortSignal.timeout(12000) });
-            const data = await response.json();
-            if (response.ok && Array.isArray(data.partits)) return data;
-          } catch {}
-        }
-        const payload = await fetchFcfJson(`${FCF_CLUB_API}/team/${encodeURIComponent(equip)}`);
-        const data = payload?.data;
-        if (!Array.isArray(data?.matches)) throw new Error("La resposta de partits de la FCF no té el format esperat");
-        const nowParts = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/Madrid", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" }).formatToParts(new Date());
-        const now = Object.fromEntries(nowParts.map(({ type, value }) => [type, value]));
-        const ara = `${now.year}-${now.month}-${now.day} ${now.hour}:${now.minute}:${now.second}`;
-        const competition = String(data.info?.CATEGORIA_EQUIPO || "").trim();
-        const escut = (file) => /^[\w.-]+\.(?:png|jpe?g|webp|svg)$/i.test(String(file || "")) ? FCF_CREST_BASE + encodeURIComponent(file) : "";
-        const partits = data.matches
-          .filter((match) => String(match.COMIENZO1 || "") >= ara)
-          .sort((a, b) => String(a.COMIENZO1).localeCompare(String(b.COMIENZO1)))
-          .map((match) => {
-            const inici = String(match.COMIENZO1 || "").match(/^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}):\d{2}$/);
-            const id = String(match.CODACTA || "").trim();
-            const local = String(match.NOMBRE_CASA || "").trim();
-            const visitant = String(match.NOMBRE_FUERA || "").trim();
-            if (!inici || !id || !local || !visitant) return null;
-            const jornada = Number(match.JORNADA);
-            const latitud = Number(match.LATITUD);
-            const longitud = Number(match.LONGITUD);
-            return {
-              id, jornada: Number.isInteger(jornada) && jornada > 0 ? jornada : "", data: inici[1], hora: inici[2], local, visitant,
-              clubIdLocal: String(match.CODCLUB_CASA || "").trim(), equipIdLocal: String(match.CODEQUIPO_CASA || "").trim(),
-              clubIdVisitant: String(match.CODCLUB_FUERA || "").trim(), equipIdVisitant: String(match.CODEQUIPO_FUERA || "").trim(),
-              escudoLocal: escut(match.ESCUDO_CASA), escudoVisitant: escut(match.ESCUDO_FUERA), pavello: String(match.CAMPO || "").trim(),
-              ubicacio: Number.isFinite(latitud) && Number.isFinite(longitud) ? `https://maps.google.com/?q=${latitud},${longitud}` : "",
-              competicio: String(match.NOMBRE_COMPETICION || competition).trim(), amistos: jornada === 0,
-            };
-          })
-          .filter(Boolean)
-          .slice(0, 10);
-        const equipacions = (Array.isArray(data.kits) ? data.kits : [])
-          .filter((kit) => kit && (kit.PRINCIPAL === "1" || kit.PRINCIPAL === "2"))
-          .map((kit) => ({
-            nom: kit.PRINCIPAL === "1" ? "Primera" : "Segona",
-            samarreta: String(kit.COLOR_CAMISETA1 || kit.COLOR_CAMISETA2 || "").trim(),
-          }))
-          .filter((kit) => kit.samarreta);
-        return { partits, equipacions };
+        const response = await fetch(`/api/partits?equip=${encodeURIComponent(equip)}`, { signal: AbortSignal.timeout(12000) });
+        const data = await response.json();
+        if (!response.ok || !Array.isArray(data.partits)) throw new Error("No s’han pogut carregar els partits");
+        return data;
       }
       async function fetchTeamRoster(equip) {
-        if (location.protocol !== "file:") {
-          try {
-            const response = await fetch(`/api/plantilla?equip=${encodeURIComponent(equip)}`, { signal: AbortSignal.timeout(12000) });
-            const data = await response.json();
-            if (response.ok && Array.isArray(data.jugadors)) return data.jugadors;
-          } catch {}
-        }
-        const payload = await fetchFcfJson(`${FCF_CLUB_API}/team/${encodeURIComponent(equip)}`);
-        return Array.isArray(payload?.data?.players)
-          ? payload.data.players.map((player) => String(player?.NOMBRE || "").trim()).filter((name) => name && !/^JUGADOR(?:\/A)?$/i.test(name))
-          : [];
-      }
-      function mapFcfKits(kits) {
-        if (!Array.isArray(kits)) return [];
-        return kits
-          .filter((kit) => kit && (kit.PRINCIPAL === "1" || kit.PRINCIPAL === "2"))
-          .map((kit) => ({
-            nom: kit.PRINCIPAL === "1" ? "Primera" : "Segona",
-            colors: [...new Set([kit.COLOR_CAMISETA1, kit.COLOR_CAMISETA2]
-              .map((color) => String(color || "").trim().toUpperCase())
-              .filter((color) => /^#[\da-f]{6}$/i.test(color)))],
-          }))
-          .filter((kit) => kit.colors.length);
+        const response = await fetch(`/api/plantilla?equip=${encodeURIComponent(equip)}`, { signal: AbortSignal.timeout(12000) });
+        const data = await response.json();
+        if (!response.ok || !Array.isArray(data.jugadors)) throw new Error("No s’ha pogut carregar la plantilla");
+        return data.jugadors;
       }
       async function fetchMatchKits(match) {
         const identifiers = [match.clubIdLocal, match.equipIdLocal, match.clubIdVisitant, match.equipIdVisitant];
         if (identifiers.some((id) => !/^\d{1,12}$/.test(String(id || "")))) return { local: [], visitant: [] };
-        if (location.protocol !== "file:") {
-          try {
-            const params = new URLSearchParams({ clubLocal: match.clubIdLocal, equipLocal: match.equipIdLocal, clubVisitant: match.clubIdVisitant, equipVisitant: match.equipIdVisitant });
-            const response = await fetch(`/api/equipacions?${params}`, { signal: AbortSignal.timeout(12000) });
-            const data = await response.json();
-            if (response.ok && data.equipacions) return data.equipacions;
-          } catch {}
-        }
-        const [local, visitant] = await Promise.all([
-          fetchFcfJson(`${FCF_API_ROOT}/${match.clubIdLocal}/team/${match.equipIdLocal}`),
-          fetchFcfJson(`${FCF_API_ROOT}/${match.clubIdVisitant}/team/${match.equipIdVisitant}`),
-        ]);
-        return { local: mapFcfKits(local.data?.kits), visitant: mapFcfKits(visitant.data?.kits) };
+        const params = new URLSearchParams({ clubLocal: match.clubIdLocal, equipLocal: match.equipIdLocal, clubVisitant: match.clubIdVisitant, equipVisitant: match.equipIdVisitant });
+        const response = await fetch(`/api/equipacions?${params}`, { signal: AbortSignal.timeout(12000) });
+        const data = await response.json();
+        if (!response.ok || !data.equipacions) throw new Error("No s’han pogut carregar les equipacions");
+        return data.equipacions;
       }
       function parseDate(value) {
         const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
@@ -751,10 +666,12 @@
         byId("fcf-roster-list").hidden = true;
         byId("fcf-roster-list").replaceChildren();
         byId("fcf-roster-status").textContent = "";
+        byId("use-fcf-roster").hidden = true;
         byId("use-fcf-roster").disabled = true;
       }
       function showFcfRosterLoading() {
         byId("fcf-roster").hidden = false;
+        byId("use-fcf-roster").hidden = false;
         byId("fcf-roster-status").className = "status";
         byId("fcf-roster-status").textContent = t("Consultant la plantilla de la FCF…", "Consultando la plantilla de la FCF…");
       }
@@ -780,6 +697,7 @@
         }));
         list.hidden = fcfRoster.length === 0;
         byId("fcf-roster").hidden = false;
+        byId("use-fcf-roster").hidden = false;
         byId("fcf-roster-status").className = fcfRoster.length ? "status" : "status error";
         byId("fcf-roster-status").textContent = fcfRoster.length
           ? t(`Plantilla FCF: ${fcfRoster.length} jugadors.`, `Plantilla FCF: ${fcfRoster.length} jugadores.`)
@@ -932,6 +850,10 @@
         });
       }
       updateKitInstructions();
+      byId("clear-players").addEventListener("click", () => {
+        byId("players").value = "";
+        render();
+      });
       byId("copy").addEventListener("click", async () => {
         const status = byId("copy-status");
         try {
